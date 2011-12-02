@@ -394,7 +394,11 @@ class TranscodeObject(object):
         rc = True
         try:
             ffmpeg_exe = get_ffmpeg_executable_path()
-            kwargs = {"stdin": open(os.devnull, 'rb'),
+            if self.media_file is '-':
+                stdin = subprocess.PIPE
+            else:
+                stdin = open(os.devnull, 'rb')
+            kwargs = {"stdin": stdin,
                       "stdout": subprocess.PIPE,
                       "stderr": open(os.devnull, 'wb'),
                       "startupinfo": util.no_console_startupinfo()}
@@ -428,6 +432,8 @@ class TranscodeObject(object):
             args += TranscodeObject.output_args
             logging.debug('Running command %s' % ' '.join(args))
             self.ffmpeg_handle = subprocess.Popen(args, **kwargs)
+            if self.media_file is '-':
+                self.input_pipe = self.ffmpeg_handle.stdin
 
             segmenter_exe = get_segmenter_executable_path()
             args = [segmenter_exe]
