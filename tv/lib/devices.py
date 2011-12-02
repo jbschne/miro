@@ -1127,7 +1127,7 @@ class DeviceSyncManager(object):
 
 
     def is_finished(self):
-        if self.stopping:
+        if self.stopping or not self.started:
             return True
         if self.waiting or self.copying:
             return False
@@ -1147,7 +1147,7 @@ class DeviceSyncManager(object):
         if not total:
             return 0.0
         progress = float(sum(self.progress_size.itervalues()))
-        return progress / total
+        return min(progress / total, 1.0)
 
     def cancel(self):
         if not self.started:
