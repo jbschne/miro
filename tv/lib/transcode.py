@@ -111,7 +111,10 @@ def video_can_copy(codec, size):
             w, h = [int(d) for d in size.split('x')]
         except ValueError:
             size = None    # Cannot determine size.
-    if (not size or not codec in valid_codecs or
+    # size isn't always found, don't force transcode unecessarily
+    else:
+        w = h = 0
+    if (not codec in valid_codecs or
       w > max_width or h > max_height):
         return False
     return True
